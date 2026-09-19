@@ -7,6 +7,7 @@ import { CatalogItemsModule } from './catalog-items/catalog-items.module';
 import { RegistrationsModule } from './registrations/registrations.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
+import { SessionModule } from './session/session.module';
 
 @Module({
   imports: [CustomersModule, EventsModule, 
@@ -25,7 +26,7 @@ import { ConfigModule } from '@nestjs/config';
       autoLoadEntities: true,
       synchronize: true,
     }),
-    CatalogItemsModule, RegistrationsModule],
+    CatalogItemsModule, RegistrationsModule, SessionModule],
   controllers: [AppController],
   providers: [AppService],
 })
