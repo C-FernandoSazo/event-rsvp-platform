@@ -212,58 +212,91 @@ export function RegistrationPage() {
   }
 
   return (
-    <div className="container">
-      <h1>Confirmación de asistencia</h1>
+    <div className="page">
+      <div className="layout">
+        <header className="topbar">
+          <div>
+            <h1>Disagro</h1>
+            <p>Feria de Promociones 2026</p>
+          </div>
+        </header>
 
-      {message && (
-        <div className="message success">
-          {message}
+        {(message || error) && (
+          <div className="alerts">
+            {message && (
+              <div className="message success">
+                {message}
+              </div>
+            )}
+
+            {error && (
+              <div className="message error">
+                {error}
+              </div>
+            )}
+          </div>
+        )}
+
+        <div className="content-grid">
+          <div className="column">
+            <div className="step-title">
+              <span className="step-number">1</span>
+              <h2>Ingrese su información</h2>
+            </div>
+
+            <CustomerForm
+              customer={customer}
+              onChange={setCustomer}
+            />
+
+            <EventSelector
+              events={events}
+              eventId={eventId}
+              attendanceDatetime={
+                attendanceDatetime
+              }
+              onEventChange={
+                handleEventChange
+              }
+              onDateChange={
+                handleDateChange
+              }
+            />
+          </div>
+
+          <div className="column">
+            <div className="step-title">
+              <span className="step-number">2</span>
+              <h2>
+                Seleccione servicios y productos
+              </h2>
+            </div>
+
+            <CatalogSelector
+              items={catalogItems}
+              selectedItemIds={selectedItemIds}
+              onToggle={handleItemToggle}
+            />
+
+            <button
+              className="confirm-button"
+              onClick={handleSubmit}
+            >
+              Confirmar asistencia
+            </button>
+          </div>
         </div>
-      )}
 
-      {error && (
-        <div className="message error">
-          {error}
-        </div>
-      )}
+        {registration && (
+          <RegistrationSummary
+            registration={registration}
+          />
+        )}
 
-      <CustomerForm
-        customer={customer}
-        onChange={setCustomer}
-      />
-
-      <EventSelector
-        events={events}
-        eventId={eventId}
-        attendanceDatetime={
-          attendanceDatetime
-        }
-        onEventChange={
-          handleEventChange
-        }
-        onDateChange={
-          handleDateChange
-        }
-      />
-
-      <CatalogSelector
-        items={catalogItems}
-        selectedItemIds={selectedItemIds}
-        onToggle={handleItemToggle}
-      />
-
-      <button
-        className="confirm-button"
-        onClick={handleSubmit}
-      >
-        Confirmar asistencia
-      </button>
-
-      {registration && (
-        <RegistrationSummary
-          registration={registration}
-        />
-      )}
+        <footer className="footer">
+          Atención al cliente: 2223-2425
+        </footer>
+      </div>
     </div>
   );
 }

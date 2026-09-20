@@ -21,11 +21,9 @@ export function CatalogSelector({
 
     return (
         <div className="section">
-        <h2>Productos y servicios</h2>
+        <h3>Servicios</h3>
 
-        <h3>Productos</h3>
-
-        {products.map((item) => (
+        {services.map((item) => (
             <div
             className="catalog-item"
             key={item.id}
@@ -43,9 +41,11 @@ export function CatalogSelector({
             </div>
         ))}
 
-        <h3>Servicios</h3>
+        <h3 style={{ marginTop: '18px' }}>
+            Productos
+        </h3>
 
-        {services.map((item) => (
+        {products.map((item) => (
             <div
             className="catalog-item"
             key={item.id}
