@@ -5,116 +5,89 @@ export function registrationConfirmationTemplate(registration: Registration): st
         .map(
         (item) => `
             <tr>
-            <td style="padding:10px;border-bottom:1px solid #eeeeee;">
+            <td style="padding:12px 10px;border-bottom:1px solid #eeeeee;">
                 ${item.catalogItem.name}
             </td>
-
-            <td style="padding:10px;border-bottom:1px solid #eeeeee;">
-                ${
-                item.catalogItem.type === 'PRODUCT'
-                    ? 'Producto'
-                    : 'Servicio'
-                }
+            <td style="padding:12px 10px;border-bottom:1px solid #eeeeee;color:#666666;">
+                ${item.catalogItem.type === 'PRODUCT' ? 'Producto' : 'Servicio'}
             </td>
-
-            <td style="padding:10px;border-bottom:1px solid #eeeeee;text-align:right;">
+            <td style="padding:12px 10px;border-bottom:1px solid #eeeeee;text-align:right;white-space:nowrap;">
                 Q${Number(item.unitPrice).toFixed(2)}
             </td>
             </tr>
         `,
-        ).join('');
+    )
+    .join('');
 
-    const summaries = registration.summaries
+    const discountedSummaries = registration.summaries.filter(
+        (summary) => Number(summary.discountPercentage) > 0,
+    );
+
+    const discounts = discountedSummaries
         .map(
         (summary) => `
-            <div style="
-            border:1px solid #dddddd;
-            border-radius:8px;
-            padding:15px;
-            margin-bottom:12px;
-            ">
-            <strong>
-                ${
-                summary.itemType === 'PRODUCT'
-                    ? 'Productos'
-                    : 'Servicios'
-                }
-            </strong>
+            <div style="border:1px solid #dddddd;border-radius:8px;padding:15px;margin-bottom:12px;">
+            <div style="font-weight:bold;margin-bottom:10px;">
+                ${summary.itemType === 'PRODUCT' ? 'Productos' : 'Servicios'}
+            </div>
 
-            <p>Cantidad: ${summary.itemCount}</p>
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+                <span>Subtotal</span>
+                <span>Q${Number(summary.subtotal).toFixed(2)}</span>
+            </div>
 
-            <p>
-                Subtotal:
-                Q${Number(summary.subtotal).toFixed(2)}
-            </p>
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;color:#388e3c;">
+                <span>Descuento ${Number(summary.discountPercentage).toFixed(0)}%</span>
+                <span>-Q${Number(summary.discountAmount).toFixed(2)}</span>
+            </div>
 
-            <p style="color:#388e3c;">
-                Descuento:
-                ${Number(summary.discountPercentage).toFixed(0)}%
-            </p>
-
-            <p>
-                Total:
-                Q${Number(summary.total).toFixed(2)}
-            </p>
+            <div style="display:flex;justify-content:space-between;padding-top:8px;margin-top:8px;border-top:1px solid #eeeeee;">
+                <strong>Total</strong>
+                <strong>Q${Number(summary.total).toFixed(2)}</strong>
+            </div>
             </div>
         `,
         )
         .join('');
 
+    const discountsSection =
+        discountedSummaries.length > 0
+        ? `
+            <h3 style="margin:28px 0 12px;font-size:17px;color:#222222;">
+            Descuentos aplicados
+            </h3>
+            ${discounts}
+        `
+        : '';
+
     const grandTotal = registration.summaries.reduce(
-        (total, summary) =>
-        total + Number(summary.total),
+        (total, summary) => total + Number(summary.total),
         0,
     );
 
-    const attendanceDate = new Date(
-        registration.attendanceDatetime,
-    ).toLocaleString('es-GT', {
+    const attendanceDate = new Date(registration.attendanceDatetime).toLocaleString('es-GT', {
         timeZone: 'America/Guatemala',
+        dateStyle: 'medium',
+        timeStyle: 'short',
     });
 
     return `
-        <div style="
-        font-family:Arial,Helvetica,sans-serif;
-        background:#f2f2f2;
-        padding:25px;
-        color:#222222;
-        ">
+        <div style="margin:0;padding:30px 15px;background:#f2f2f2;font-family:Arial,Helvetica,sans-serif;color:#222222;">
+        <div style="max-width:650px;margin:0 auto;background:#ffffff;border:1px solid #dddddd;">
 
-        <div style="
-            max-width:650px;
-            margin:auto;
-            background:#ffffff;
-            border:1px solid #dddddd;
-        ">
-
-            <div style="
-            background:#3d3d3d;
-            color:#ffffff;
-            padding:20px 25px;
-            ">
-            <h1 style="margin:0;">
-                Disagro
-            </h1>
-
-            <p style="margin:4px 0 0;">
-                Feria de Promociones
-            </p>
+            <div style="background:#3d3d3d;color:#ffffff;padding:22px 25px;">
+            <h1 style="margin:0;font-size:26px;line-height:1.2;">Disagro</h1>
+            <p style="margin:5px 0 0;font-size:15px;">Feria de Promociones</p>
             </div>
 
             <div style="padding:25px;">
+            <h2 style="margin:0 0 15px;font-size:21px;">Confirmación de asistencia</h2>
 
-            <h2>
-                Confirmación de asistencia
-            </h2>
-
-            <p>
-                Hola ${registration.customer.firstName}
-                ${registration.customer.lastName},
+            <p style="margin:0 0 12px;line-height:1.6;">
+                Hola <strong>${registration.customer.firstName} ${registration.customer.lastName}</strong>,
             </p>
 
-            <p>
+            <p style="margin:0 0 20px;line-height:1.6;color:#555555;">
                 Tu asistencia ha sido confirmada correctamente.
             </p>
 
@@ -157,37 +130,27 @@ export function registrationConfirmationTemplate(registration: Registration): st
                     </th>
                 </tr>
                 </thead>
-
                 <tbody>
                 ${items}
                 </tbody>
             </table>
 
-            <h3>Resumen de promociones</h3>
+            ${discountsSection}
 
-            ${summaries}
-
-            <div style="
-                background:#3d3d3d;
-                color:#ffffff;
-                padding:15px;
-                text-align:right;
-                border-radius:6px;
-            ">
-                <strong>
-                Total general:
-                Q${grandTotal.toFixed(2)}
-                </strong>
+            <div style="margin-top:25px;background:#3d3d3d;color:#ffffff;padding:17px 18px;border-radius:8px;display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-size:15px;">Total general</span>
+                <strong style="font-size:20px;">Q${grandTotal.toFixed(2)}</strong>
             </div>
 
-            <p style="
-                margin-top:25px;
-                color:#666666;
-            ">
-                Gracias por confirmar tu participación.
+            <p style="margin:25px 0 0;color:#777777;font-size:13px;line-height:1.5;">
+                Gracias por confirmar tu participación en el evento.
             </p>
-
             </div>
+
+            <div style="background:#3d3d3d;color:#ffffff;padding:12px 25px;text-align:right;font-size:12px;">
+            Atención al cliente: 2223-2425
+            </div>
+
         </div>
         </div>
     `;

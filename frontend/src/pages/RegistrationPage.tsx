@@ -7,11 +7,11 @@ import { deleteSession, getSession, updateSession } from '../api/session.api';
 import { CatalogSelector } from '../components/CatalogSelector';
 import { CustomerForm } from '../components/CustomerForm';
 import { EventSelector } from '../components/EventSelector';
-import { RegistrationSummary } from '../components/RegistrationSummary';
 import type { CatalogItem } from '../types/catalog-item';
 import type { CreateCustomer } from '../types/customer';
 import type { Event } from '../types/event';
 import type { Registration } from '../types/registration';
+import { RegistrationResultModal } from '../components/RegistrationResultModal';
 
 export function RegistrationPage() {
   const [customer, setCustomer] =
@@ -288,8 +288,11 @@ export function RegistrationPage() {
         </div>
 
         {registration && (
-          <RegistrationSummary
+          <RegistrationResultModal
             registration={registration}
+            onClose={() =>
+              setRegistration(null)
+            }
           />
         )}
 
