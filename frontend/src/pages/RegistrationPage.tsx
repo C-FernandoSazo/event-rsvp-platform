@@ -46,93 +46,95 @@ export function RegistrationPage() {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
+  const [sessionLoaded, setSessionLoaded] = useState(false);
+
   useEffect(() => {
     loadData();
   }, []);
 
   async function loadData() {
     try {
-      const [
-        eventsData,
-        catalogData,
-        sessionData,
-      ] = await Promise.all([
+      const [eventsData, catalogData, sessionData] = await Promise.all([
         getEvents(),
         getCatalogItems(),
         getSession(),
       ]);
 
-      setEvents(
-        eventsData.filter((event) => event.active),
-      );
-
+      setEvents(eventsData.filter((event) => event.active));
       setCatalogItems(catalogData);
+
+      setCustomer({
+        firstName: sessionData.firstName ?? '',
+        lastName: sessionData.lastName ?? '',
+        email: sessionData.email ?? '',
+      });
 
       if (sessionData.eventId) {
         setEventId(sessionData.eventId);
       }
 
       if (sessionData.attendanceDatetime) {
-        setAttendanceDatetime(
-          sessionData.attendanceDatetime,
-        );
+        setAttendanceDatetime(sessionData.attendanceDatetime);
       }
 
-      setSelectedItemIds(
-        sessionData.itemIds ?? [],
-      );
+      setSelectedItemIds(sessionData.itemIds ?? []);
+      setSessionLoaded(true);
     } catch (error) {
       showError(error);
     }
   }
 
-  async function handleEventChange(
-    id: number,
-  ) {
+  useEffect(() => {
+    if (!sessionLoaded) return;
+
+    const timer = setTimeout(() => {
+      updateSession({
+        firstName: customer.firstName,
+        lastName: customer.lastName,
+        email: customer.email,
+        ...(eventId ? { eventId } : {}),
+        ...(attendanceDatetime ? { attendanceDatetime } : {}),
+        itemIds: selectedItemIds,
+      }).catch(showError);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [
+    customer,
+    eventId,
+    attendanceDatetime,
+    selectedItemIds,
+    sessionLoaded,
+  ]);
+
+  function handleEventChange(id: number) {
     setEventId(id);
 
-    try {
-      await updateSession({
-        eventId: id,
-      });
-    } catch (error) {
-      showError(error);
+    const selectedEvent = events.find(
+      (event) => event.id === id,
+    );
+
+    if (!selectedEvent) {
+      setAttendanceDatetime('');
+      return;
     }
+
+    const firstAvailableTime = selectedEvent.startTime.slice(0, 5);
+    const datetime = `${selectedEvent.eventDate}T${firstAvailableTime}`;
+
+    setAttendanceDatetime(datetime);
   }
 
-  async function handleDateChange(
-    date: string,
-  ) {
+  function handleDateChange(date: string) {
     setAttendanceDatetime(date);
-
-    try {
-      await updateSession({
-        attendanceDatetime: date,
-      });
-    } catch (error) {
-      showError(error);
-    }
   }
 
-  async function handleItemToggle(
-    id: number,
-  ) {
-    const newItemIds =
-      selectedItemIds.includes(id)
-        ? selectedItemIds.filter(
-            (itemId) => itemId !== id,
-          )
-        : [...selectedItemIds, id];
+  function handleItemToggle(id: number) {
+    const newItemIds = selectedItemIds.includes(id)
+      ? selectedItemIds.filter((itemId) => itemId !== id)
+      : [...selectedItemIds, id];
 
     setSelectedItemIds(newItemIds);
-
-    try {
-      await updateSession({
-        itemIds: newItemIds,
-      });
-    } catch (error) {
-      showError(error);
-    }
   }
 
   async function handleSubmit() {
