@@ -137,10 +137,16 @@ export function registrationConfirmationTemplate(registration: Registration): st
 
             ${discountsSection}
 
-            <div style="margin-top:25px;background:#3d3d3d;color:#ffffff;padding:17px 18px;border-radius:8px;display:flex;justify-content:space-between;align-items:center;">
-                <span style="font-size:15px;">Total general</span>
-                <strong style="font-size:20px;">Q${grandTotal.toFixed(2)}</strong>
-            </div>
+            <table style="width:100%;margin-top:25px;background:#3d3d3d;color:#ffffff;border-radius:8px;border-collapse:separate;">
+                <tr>
+                    <td style="padding:17px 18px;font-size:15px;text-align:left;">
+                        Total general
+                    </td>
+                    <td style="padding:17px 18px;font-size:20px;font-weight:bold;text-align:right;white-space:nowrap;">
+                        Q${grandTotal.toFixed(2)}
+                    </td>
+                </tr>
+            </table>
 
             <p style="margin:25px 0 0;color:#777777;font-size:13px;line-height:1.5;">
                 Gracias por confirmar tu participación en el evento.

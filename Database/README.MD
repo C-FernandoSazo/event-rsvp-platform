@@ -43,7 +43,7 @@ Los eventos de promociones anuales. Permite que la plataforma soporte más de un
 |---|---|---|
 | `id` | SERIAL PK | |
 | `name`, `description` | VARCHAR | |
-| `event_date` | DATE | |
+| `event_date`, `start_time`, `end_time` | DATE | |
 | `active` | BOOLEAN | Permite desactivar eventos pasados sin borrarlos |
 
 ### `catalog_items`
