@@ -8,6 +8,7 @@ import { Registration } from './entities/registration.entity';
 import { RegistrationItem } from './entities/registration-item.entity';
 import { RegistrationSummary } from './entities/registration-summary.entity';
 import {type IRegistrationsRepository, REGISTRATIONS_REPOSITORY } from './repositories/registrations.repository.interface';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class RegistrationsService {
@@ -17,6 +18,7 @@ export class RegistrationsService {
         private readonly customersService: CustomersService,
         private readonly eventsService: EventsService,
         private readonly catalogItemsService: CatalogItemsService,
+        private readonly mailService: MailService,
     ) {}
 
     async create( createRegistrationDto: CreateRegistrationDto ): Promise<Registration> {
@@ -66,11 +68,22 @@ export class RegistrationsService {
         const summaries =
         this.createSummaries(catalogItems);
 
-        return this.registrationsRepository.create(
+        const savedRegistration = 
+            await this.registrationsRepository.create(
             registration,
             registrationItems,
             summaries,
         );
+
+        try {
+            await this.mailService.sendRegistrationConfirmation(
+                savedRegistration,
+            );
+        } catch (error) {
+            console.error('Error sending registration confirmation:', error);
+        }
+
+        return savedRegistration;
     }
 
     async findOne(id: number): Promise<Registration> {

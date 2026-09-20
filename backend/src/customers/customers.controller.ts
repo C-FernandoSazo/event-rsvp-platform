@@ -19,6 +19,12 @@ export class CustomersController {
         return this.customersService.findAll();
     }
 
+
+    @Get('by-email')
+    findByEmail(@Query('email') email: string) {
+        return this.customersService.findByEmail(email);
+    }
+
     @Get(':id')
     findOne(@Param('id', ParseIntPipe) id: number) {
         return this.customersService.findOne(id);
@@ -30,10 +36,5 @@ export class CustomersController {
         @Body() updateCustomerDto: UpdateCustomerDto,
     ) {
         return this.customersService.update(id, updateCustomerDto);
-    }
-
-    @Get('by-email')
-    findByEmail(@Query('email') email: string) {
-        return this.customersService.findByEmail(email);
     }
 }

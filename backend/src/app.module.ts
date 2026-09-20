@@ -8,6 +8,7 @@ import { RegistrationsModule } from './registrations/registrations.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { SessionModule } from './session/session.module';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [CustomersModule, EventsModule, 
@@ -26,7 +27,7 @@ import { SessionModule } from './session/session.module';
       autoLoadEntities: true,
       synchronize: true,
     }),
-    CatalogItemsModule, RegistrationsModule, SessionModule],
+    CatalogItemsModule, RegistrationsModule, SessionModule, MailModule],
   controllers: [AppController],
   providers: [AppService],
 })
