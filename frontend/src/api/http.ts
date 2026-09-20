@@ -28,5 +28,11 @@ export async function request<T>(
         throw new Error(message);
     }
 
-    return response.json();
+    const text = await response.text();
+
+    if (!text) {
+        return null as T;
+    }
+
+    return JSON.parse(text) as T;
 }
