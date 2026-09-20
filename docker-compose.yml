@@ -24,15 +24,14 @@ services:
     restart: unless-stopped
     environment:
       PORT: 3000
-      NODE_ENV: development
-
+      NODE_ENV: production
       DB_HOST: db
       DB_PORT: 5432
       DB_USER: ${POSTGRES_USER}
       DB_PASSWORD: ${POSTGRES_PASSWORD}
       DB_NAME: ${POSTGRES_DB}
 
-      FRONTEND_URL: http://localhost
+      FRONTEND_URL: https://usaclab.com
 
       SESSION_SECRET: ${SESSION_SECRET}
 
@@ -64,13 +63,26 @@ services:
     container_name: promotions-frontend
     restart: unless-stopped
 
-    ports:
-      - "80:80"
-
     depends_on:
       backend:
         condition: service_healthy
 
+  caddy:
+    image: caddy:2-alpine
+    container_name: promotions-caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - frontend
+      - backend
 
 volumes:
   postgres_data:
+  caddy_data:
+  caddy_config:
