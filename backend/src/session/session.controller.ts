@@ -7,10 +7,12 @@ export class SessionController {
     @Get()
     getSession(@Req() req: Request) {
         return {
+            firstName: req.session.firstName ?? '',
+            lastName: req.session.lastName ?? '',
+            email: req.session.email ?? '',
             customerId: req.session.customerId ?? null,
             eventId: req.session.eventId ?? null,
-            attendanceDatetime:
-                req.session.attendanceDatetime ?? null,
+            attendanceDatetime: req.session.attendanceDatetime ?? null,
             itemIds: req.session.itemIds ?? [],
         };
     }

@@ -26,9 +26,17 @@ export class RegistrationsService {
             createRegistrationDto.customerId,
         );
 
-        const event = await this.eventsService.findOne(
-            createRegistrationDto.eventId,
-        );
+        const event = await this.eventsService.findOne( createRegistrationDto.eventId );    
+
+        const attendanceDate = new Date(createRegistrationDto.attendanceDatetime);
+        const startDate = new Date(`${event.eventDate}T${event.startTime}`);
+        const endDate = new Date(`${event.eventDate}T${event.endTime}`);
+
+        if ( attendanceDate < startDate || attendanceDate > endDate ) {
+            throw new BadRequestException(
+                `La hora de asistencia debe estar entre ${event.startTime} y ${event.endTime}`,
+            );
+        }
 
         if (!event.active) {
             throw new BadRequestException(

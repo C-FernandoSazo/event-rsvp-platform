@@ -7,6 +7,12 @@ export class CreateEventDto {
     name: string;
 
     @IsString()
+    startTime: string;
+
+    @IsString()
+    endTime: string;
+
+    @IsString()
     @IsOptional()
     @MaxLength(500)
     description?: string;

@@ -1,4 +1,5 @@
 import type { CatalogItem } from '../types/catalog-item';
+import { useState } from 'react';
 
 interface Props {
     items: CatalogItem[];
@@ -11,57 +12,90 @@ export function CatalogSelector({
     selectedItemIds,
     onToggle,
 }: Props) {
-    const products = items.filter(
-        (item) => item.type === 'PRODUCT',
+    const [search, setSearch] = useState('');
+
+    const filteredItems = items.filter((item) =>
+        item.name.toLowerCase().includes(search.toLowerCase()),
     );
 
-    const services = items.filter(
-        (item) => item.type === 'SERVICE',
-    );
+    const services = filteredItems.filter((item) => item.type === 'SERVICE');
+    const products = filteredItems.filter((item) => item.type === 'PRODUCT');
+
+    function renderItem(item: CatalogItem) {
+        const selected =selectedItemIds.includes(item.id);
+
+        return (
+            <label
+                key={item.id}
+                className={`catalog-option ${
+                selected ? 'selected' : ''
+                }`}
+            >
+                <input
+                    type="checkbox"
+                    checked={selected}
+                    onChange={() => onToggle(item.id)}
+                />
+
+                <div className="catalog-option-info">
+                    <span className="catalog-name">
+                        {item.name}
+                    </span>
+
+                    {item.description && (
+                        <span className="catalog-description">
+                            {item.description}
+                        </span>
+                    )}
+                </div>
+
+                <span className="catalog-price">
+                Q{Number(item.price).toFixed(2)}
+                </span>
+            </label>
+        );
+    }
+
 
     return (
-        <div className="section">
-        <h3>Servicios</h3>
-
-        {services.map((item) => (
-            <div
-            className="catalog-item"
-            key={item.id}
-            >
+        <div className="section catalog-section">
             <input
-                type="checkbox"
-                checked={selectedItemIds.includes(item.id)}
-                onChange={() => onToggle(item.id)}
+                className="catalog-search"
+                type="text"
+                placeholder="Buscar producto o servicio..."
+                value={search}
+                onChange={ (e) => setSearch(e.target.value) }
             />
 
-            <span>
-                {item.name} - Q
-                {Number(item.price).toFixed(2)}
-            </span>
+            <div className="catalog-group">
+            <h3>
+                Servicios
+                <span className="catalog-count">{services.length}</span>
+            </h3>
+
+            <div className="catalog-list">
+                {services.length > 0 ? (
+                services.map(renderItem)
+                ) : (
+                <p className="empty-text">No se encontraron servicios.</p>
+                )}
             </div>
-        ))}
-
-        <h3 style={{ marginTop: '18px' }}>
-            Productos
-        </h3>
-
-        {products.map((item) => (
-            <div
-            className="catalog-item"
-            key={item.id}
-            >
-            <input
-                type="checkbox"
-                checked={selectedItemIds.includes(item.id)}
-                onChange={() => onToggle(item.id)}
-            />
-
-            <span>
-                {item.name} - Q
-                {Number(item.price).toFixed(2)}
-            </span>
             </div>
-        ))}
+
+            <div className="catalog-group">
+            <h3>
+                Productos
+                <span className="catalog-count">{products.length}</span>
+            </h3>
+
+            <div className="catalog-list">
+                {products.length > 0 ? (
+                products.map(renderItem)
+                ) : (
+                <p className="empty-text">No se encontraron productos.</p>
+                )}
+            </div>
+            </div>
         </div>
     );
 }
