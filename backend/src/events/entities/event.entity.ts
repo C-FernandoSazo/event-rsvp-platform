@@ -14,6 +14,12 @@ export class Event {
     @Column({ name: 'event_date', type: 'date' })
     eventDate: string;
 
+    @Column({ name: 'start_time', type: 'time', default: '08:00:00' })
+    startTime: string;
+
+    @Column({ name: 'end_time', type: 'time', default: '17:00:00' })
+    endTime: string;
+
     @Column({ default: true })
     active: boolean;
 
