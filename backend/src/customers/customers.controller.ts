@@ -1,4 +1,4 @@
-import {Body, Controller, Get, Param, ParseIntPipe, Patch, Post} from '@nestjs/common';
+import {Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Query} from '@nestjs/common';
 import { CustomersService } from './customers.service';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
@@ -30,5 +30,10 @@ export class CustomersController {
         @Body() updateCustomerDto: UpdateCustomerDto,
     ) {
         return this.customersService.update(id, updateCustomerDto);
+    }
+
+    @Get('by-email')
+    findByEmail(@Query('email') email: string) {
+        return this.customersService.findByEmail(email);
     }
 }

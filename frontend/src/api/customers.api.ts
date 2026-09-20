@@ -17,3 +17,7 @@ export function getCustomers() {
 export function getCustomer(id: number) {
     return request<Customer>(`/customers/${id}`);
 }
+
+export function getCustomerByEmail(email: string) {
+    return request<Customer | null>(`/customers/by-email?email=${encodeURIComponent(email)}`);
+}

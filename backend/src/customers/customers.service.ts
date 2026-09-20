@@ -61,4 +61,8 @@ export class CustomersService {
 
         return this.customersRepository.save(customer);
     }
+
+    findByEmail(email: string): Promise<Customer | null> {
+        return this.customersRepository.findByEmail(email);
+    }
 }
